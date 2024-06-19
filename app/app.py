@@ -1,5 +1,5 @@
-from flask import Flask, redirect, request
-from lib.db.route import Route
+from flask import Flask, redirect, request, Response
+from lib.routes.route import Route
 import lib.misc.generators as gen
 
 app = Flask(__name__)
@@ -10,7 +10,12 @@ def hello():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    return gen.generateUniqueID()
+    link = request.get_json()["linkTo"]
+    id = gen.generateUniqueID()
+    r = Route(id)
+    r.setLink(link)
+    r.createRoute()
+    return Response(status="200 OK")
 
 @app.route("/r/<id>", methods=["GET"])
 def redirect_external(id):
